@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>es-rest-client</module>
+        <module>es-rest-high-level-client</module>
     </modules>
 
 
