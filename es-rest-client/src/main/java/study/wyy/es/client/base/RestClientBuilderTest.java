@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.Node;
 import org.elasticsearch.client.NodeSelector;
@@ -91,11 +93,29 @@ public class RestClientBuilderTest {
     public void testConfigTimeout() throws IOException {
         RestClient client = restClientBuilder.setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
             public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
+                // 设置套接字超时时间
                 requestConfigBuilder.setSocketTimeout(10000);
+                // 链接超时时间
+                requestConfigBuilder.setConnectTimeout(5000);
                 return requestConfigBuilder;
             }
         }).build();
         client.close();
     }
 
+    /****
+     * 配置线程数量
+     * @throws IOException
+     */
+    @Test
+    public void testConfigThread() throws IOException {
+        RestClient client= restClientBuilder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+            @Override
+            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+               httpClientBuilder.setDefaultIOReactorConfig(IOReactorConfig.custom().setIoThreadCount(2).build());
+                return httpClientBuilder;
+            }
+        }).build();
+        client.close();
+    }
 }
