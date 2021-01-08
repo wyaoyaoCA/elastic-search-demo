@@ -3,7 +3,10 @@ package study.wyy.es.client.base;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.message.BasicHeader;
+import org.elasticsearch.client.Node;
+import org.elasticsearch.client.NodeSelector;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.junit.Before;
@@ -22,11 +25,11 @@ public class RestClientBuilderTest {
     RestClientBuilder restClientBuilder;
 
     @Before
-    private RestClientBuilder initHost(){
+    public void initHost(){
         restClientBuilder = RestClient.builder(
                 new HttpHost("localhost", 9200, "http")
         );
-        return restClientBuilder;
+
     }
     @Test
     public void hello(){
@@ -56,5 +59,43 @@ public class RestClientBuilderTest {
         client.close();
     }
 
+    /****
+     * 配置监听器
+     */
+    @Test
+    public void testConfigListener() throws IOException {
+        // 设置一个监听器，该监听器在每次节点失败时都会收到通知，在启用嗅探时在内部使用。
+        RestClient client = restClientBuilder.setFailureListener(new RestClient.FailureListener() {
+            @Override
+            public void onFailure(Node node) {
+                super.onFailure(node);
+            }
+        }).build();
+        client.close();
+    }
+
+    /****
+     * 设置节点选择器
+     */
+    @Test
+    public void testConfigNodeSelector() throws IOException {
+        RestClient client = restClientBuilder.setNodeSelector(NodeSelector.SKIP_DEDICATED_MASTERS)
+                .build();
+        client.close();
+    }
+
+    /****
+     * 配置超时时间
+     */
+    @Test
+    public void testConfigTimeout() throws IOException {
+        RestClient client = restClientBuilder.setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
+            public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
+                requestConfigBuilder.setSocketTimeout(10000);
+                return requestConfigBuilder;
+            }
+        }).build();
+        client.close();
+    }
 
 }
