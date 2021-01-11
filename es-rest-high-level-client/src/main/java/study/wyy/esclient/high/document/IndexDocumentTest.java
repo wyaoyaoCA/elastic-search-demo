@@ -27,9 +27,10 @@ import java.util.Map;
  * @author wyaoyao
  * @description
  * @date 2021/1/8 16:32
+ * 索引文档测试
  */
 @Slf4j
-public class BuildJsonDocumentTest extends BaseTest {
+public class IndexDocumentTest extends BaseTest {
 
     /****
      * 直接使用字符串形式，测试同步执行，和响应结果的解析
