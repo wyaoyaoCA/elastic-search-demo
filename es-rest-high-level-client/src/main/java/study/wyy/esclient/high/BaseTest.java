@@ -1,5 +1,6 @@
 package study.wyy.esclient.high;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -12,10 +13,12 @@ import org.elasticsearch.client.RestHighLevelClient;
 public abstract class BaseTest {
 
     public static RestHighLevelClient client;
+    public static ObjectMapper objectMapper;
 
     static {
         client = new RestHighLevelClient(
                 RestClient.builder(new HttpHost("localhost", 9200, "http"))
         );
+        objectMapper = new ObjectMapper();
     }
 }
